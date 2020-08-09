@@ -1,0 +1,17 @@
+{
+  "name": "vloparking",
+  "displayName": "vloparking",
+  "expo": {
+    "name": "vloparking",
+    "slug": "vloparking",
+    "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
