@@ -23,7 +23,8 @@ export default class Login extends React.Component {
         userMap: [
             {text: 'Personal Data', description: 'mmg', icon: <AntDesign name={'idcard'} size={14} color='mediumaquamarine' size={30} />},
             {text: 'Referral ID', description: 'mmg', icon: <AntDesign name={'adduser'} size={14} color='mediumaquamarine' size={30} />},
-            {text: 'Notifications', description: 'mmg', icon: <AntDesign name={'notification'} size={14} color='mediumaquamarine' size={30} />},
+            {text: 'Notifications', description: 'mmg', icon: <AntDesign name={'bells'} size={14} color='mediumaquamarine' size={30} />},
+            {text: 'Anouncements', description: 'mmg', icon: <AntDesign name={'notification'} size={14} color='mediumaquamarine' size={30} />},
         ],
         securityMap: [
             {text: 'Password & Pin', description: 'mmg', icon: <AntDesign name={'lock'} size={14} color='lightskyblue' size={30} />},

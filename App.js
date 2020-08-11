@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Login from './screens/Login'
 import Home from './screens/Home'
-import QRScreen from './screens/QRScreen'
 import Register from './screens/Register';
 import Account from './screens/Account';
 import { NavigationContainer } from '@react-navigation/native'
@@ -15,7 +14,7 @@ import { styles } from './style/styles'
 const Stack = createStackNavigator()
 const Settings = createStackNavigator()
 const Tab = createBottomTabNavigator()
-export default function App() {
+export default function App(){
   createAppNavigation = () => {
     return (
       <Tab.Navigator
@@ -36,18 +35,6 @@ export default function App() {
           }}
         />
         <Tab.Screen
-          name="QRScreen"
-          component={QRScreen}
-          options={{
-            tabBarLabel: undefined,
-            tabBarIcon: ({ color, size }) => (
-              <View style={styles.Button}>
-                <AntDesign name='qrcode' size={20} color='white' />
-              </View>
-            )
-          }}
-        />
-        <Tab.Screen
           name="Cars"
           component={Home}
           options={{
@@ -63,21 +50,21 @@ export default function App() {
     <Settings.Navigator>
       <Settings.Screen name="Account" component={Account} />
     </Settings.Navigator>
-  return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false
-          }}
-        >
-          <Stack.Screen name="Home" children={createAppNavigation} />
-          <Stack.Screen name="Maps" component={Maps} />
-          <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="Register" component={Register} />
-          <Stack.Screen name="Account" component={createStackNavigation} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaProvider>
-  );
+    return (
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <Stack.Navigator
+            screenOptions={{
+              headerShown: false
+            }}
+          >
+            <Stack.Screen name="Home" children={createAppNavigation} />
+            <Stack.Screen name="Maps" component={Maps} />
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Register" component={Register} />
+            <Stack.Screen name="Account" component={createStackNavigation} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    );
 }

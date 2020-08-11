@@ -68,6 +68,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     color: 'white'
   },
+  buttonBlueLight: {
+    backgroundColor: '#5b86e5',
+    width: screenWidth - 20,
+    height: 50,
+    borderRadius: 5,
+    marginBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: 'white'
+  },
   buttonBlueText: {
     color: 'white',
     fontWeight: "500"
@@ -91,7 +101,7 @@ const styles = StyleSheet.create({
   QR: {
     width: screenWidth,
     height: screenHeight,
-    marginTop: -80
+    marginTop: -80 
   },
   qrContainer: {
     width: screenWidth - 20,
