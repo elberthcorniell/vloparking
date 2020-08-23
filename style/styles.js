@@ -1,6 +1,10 @@
 import { StyleSheet, Dimensions } from 'react-native'
 const screenHeight = Dimensions.get("window").height;
 const screenWidth = Dimensions.get("window").width;
+const DARK_BLUE = '#ff4040' /*'#1a2c50'*/
+const LIGHT_BLUE = '#5b86e5'
+const LIGHT_GRAY = '#f3f5f7'
+
 
 const styles = StyleSheet.create({
   container: {
@@ -24,7 +28,7 @@ const styles = StyleSheet.create({
     left: 10
   },
   blueTitle: {
-    color: '#5b86e5',
+    color: DARK_BLUE,
     fontSize: 38,
     fontWeight: "bold",
     textAlign: 'left',
@@ -37,7 +41,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   Button: {
-    backgroundColor: '#5b86e5',
+    backgroundColor: DARK_BLUE,
     width: 50,
     height: 50,
     borderRadius: 25,
@@ -50,17 +54,17 @@ const styles = StyleSheet.create({
     zIndex: 1
   },
   input: {
-    backgroundColor: '#f3f5f7',
-    width: screenWidth - 20,
+    backgroundColor: LIGHT_GRAY,
+    width: screenWidth - 40,
     height: 50,
     borderRadius: 5,
     paddingLeft: 20,
     marginBottom: 20,
-    fontWeight: "500"
+    fontWeight: "bold"
   },
   buttonBlue: {
-    backgroundColor: '#1a2c50',
-    width: screenWidth - 20,
+    backgroundColor: DARK_BLUE,
+    width: screenWidth - 40,
     height: 50,
     borderRadius: 5,
     marginBottom: 20,
@@ -69,14 +73,26 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   buttonBlueLight: {
-    backgroundColor: '#5b86e5',
+    backgroundColor: LIGHT_BLUE,
     width: screenWidth - 20,
     height: 50,
     borderRadius: 5,
     marginBottom: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    color: 'white'
+    color: 'white',
+    fontWeight: "bold"
+  },
+  modalView: {
+    height: screenHeight * 0.90,
+    position: 'absolute',
+    bottom: 0,
+    backgroundColor: 'white',
+    width: screenWidth,
+    alignItems: 'center',
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
+    elevation: 20
   },
   buttonBlueText: {
     color: 'white',
@@ -101,13 +117,13 @@ const styles = StyleSheet.create({
   QR: {
     width: screenWidth,
     height: screenHeight,
-    marginTop: -80 
+    marginTop: -80
   },
   qrContainer: {
-    width: screenWidth - 20,
-    height: screenWidth * 1.3,
+    width: screenWidth - 40,
+    height: screenWidth -40,
     overflow: 'hidden',
-    borderRadius: 40,
+    borderRadius: 5,
     padding: -100,
     marginTop: 10
   }
