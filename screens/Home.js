@@ -2,61 +2,76 @@ import * as React from 'react';
 import {
     Text,
     View,
-    StyleSheet,
     Dimensions,
     TouchableOpacity,
     Image,
-    TouchableOpacityBase,
     StatusBar,
     ScrollView,
     Animated
 } from 'react-native';
 import { styles } from '../style/styles'
-import Card from '../components/Card'
 import { AntDesign } from '@expo/vector-icons'
 import * as  SecureStore from "expo-secure-store";
-import MapView from 'react-native-maps';
-import Account from '../components/Account'
-import MyCars from '../components/MyCars'
-import History from '../components/History'
-import Settings from '../components/Settings'
 import { API_HOST } from '../config'
 import SettingButton from '../components/settingButton'
 import QRScreen from './QRScreen'
 import io from 'socket.io-client'
 const screenHeight = Dimensions.get("window").height;
 const screenWidth = Dimensions.get("window").width;
-
+let socket
 export default class Home extends React.Component {
     state = {
-        card: [
-            { name: 'Cars', status: false, icon_name: 'car', content: <MyCars /> },
-            { name: 'History', status: false, icon_name: 'bars', content: <History /> },
-        ],
         userMap: [
-           /* { text: 'BTC', description: 'Bitcoin', icon: <Image source={{ uri: 'https://inverte.io/assets/images/BTC.png' }} style={{ height: 35, width: 35 }} />, margin: 40 },
-            { text: 'ETH', description: 'Ether', icon: <Image source={{ uri: 'https://inverte.io/assets/images/ETH.png' }} style={{ height: 35, width: 35 }} />, margin: 40 },
-            { text: 'USDT', description: 'Tether USD', icon: <Image source={{ uri: 'https://inverte.io/assets/images/USDT.png' }} style={{ height: 35, width: 35 }} />, margin: 40 },
-            { text: 'LINK', description: 'Chainlink', icon: <Image source={{ uri: 'https://inverte.io/assets/images/LINK.png' }} style={{ height: 35, width: 35 }} />, margin: 40 },
-            { text: 'BAT', description: 'Basic Attention', icon: <Image source={{ uri: 'https://inverte.io/assets/images/BAT.png' }} style={{ height: 35, width: 35 }} />, margin: 40 },*/
+            /* { text: 'BTC', description: 'Bitcoin', icon: <Image source={{ uri: 'https://inverte.io/assets/images/BTC.png' }} style={{ height: 35, width: 35 }} />, margin: 40 },
+             { text: 'ETH', description: 'Ether', icon: <Image source={{ uri: 'https://inverte.io/assets/images/ETH.png' }} style={{ height: 35, width: 35 }} />, margin: 40 },
+             { text: 'USDT', description: 'Tether USD', icon: <Image source={{ uri: 'https://inverte.io/assets/images/USDT.png' }} style={{ height: 35, width: 35 }} />, margin: 40 },
+             { text: 'LINK', description: 'Chainlink', icon: <Image source={{ uri: 'https://inverte.io/assets/images/LINK.png' }} style={{ height: 35, width: 35 }} />, margin: 40 },
+             { text: 'BAT', description: 'Basic Attention', icon: <Image source={{ uri: 'https://inverte.io/assets/images/BAT.png' }} style={{ height: 35, width: 35 }} />, margin: 40 },*/
             { text: 'LINK', description: 'Chainlink', icon: <Image source={{ uri: 'https://inverte.io/assets/images/LINK.png' }} style={{ height: 35, width: 35 }} />, margin: 40 },
         ],
         scrollPosition: { x: 0, y: 0 },
         scrollY: new Animated.Value(0),
-        modalState: false
+        modalState: false,
+        location:{
+            longitude: -19,
+            latitude: 70
+        }
     }
 
     componentDidMount() {
         this.verifyAuth()
-        this.setState({
-            socket: io(`${API_HOST}/`)
-        },()=>{
-            this.sendMyName()
-        })
-         
+        socket = io(`${API_HOST}/`)
+
     }
-    sendMyName(){
-        this.state.socket.emit('myName', 'Elbercito', console.log)
+    startTrip(data) {
+        data = JSON.parse(data)
+        data.userId = this.state.userId
+        socket.emit('startTrip', data, response => {
+            response == "OK" && (()=>{
+                Location.startLocationUpdatesAsync('valetTrip', {
+                    accuracy: Location.Accuracy.High,
+                    timeInterval: 500
+                }).then(() => {
+                    TaskManager.defineTask('valetTrip', ({ data: { locations }, e }) => {
+                        if (e) {
+                            console.log(e.message)
+                            return;
+                        }
+                        let { latitude, longitude, speed } = locations[0].coords
+                        socket.emit('valetLocation', {
+                            latitude,
+                            longitude,
+                            valetId: this.state.valetId,
+                            speed
+                        })
+                        this.setState({
+                            location: locations[0].coords,
+                            locationModal: true
+                        })
+                    })
+                })
+            })
+        })
     }
     updateState(index) {
         var card = this.state.card
@@ -74,6 +89,9 @@ export default class Home extends React.Component {
             })
                 .then(res => res.json())
                 .then((data) => {
+                    this.setState({
+                        ...data
+                    })
                     if (!data.success) {
                         this.props.navigation.replace('Login')
                     }
@@ -96,8 +114,8 @@ export default class Home extends React.Component {
                             style={{
                                 width: screenWidth,
                                 alignItems: 'center',
-                                marginTop: -this.state.scrollPosition.y < -95? -95 : -this.state.scrollPosition.y ,
-                                opacity: 1 - this.state.scrollPosition.y/95
+                                marginTop: -this.state.scrollPosition.y < -95 ? -95 : -this.state.scrollPosition.y,
+                                opacity: 1 - this.state.scrollPosition.y / 95
                             }}
                         >
                             <Text style={styles.blueTitle}>History</Text>
@@ -157,7 +175,7 @@ export default class Home extends React.Component {
                             <View
                                 style={{
                                     width: screenWidth - (((this.state.scrollPosition.y / 80) > 1 ? 0 : 1 - (this.state.scrollPosition.y / 80)) * 20),
-                                    height: 130 + (((this.state.scrollPosition.y / 80) > 1? 1 : (this.state.scrollPosition.y / 80)) * 10),
+                                    height: 130 + (((this.state.scrollPosition.y / 80) > 1 ? 1 : (this.state.scrollPosition.y / 80)) * 10),
                                     backgroundColor: '#ff4040',
                                     marginBottom: -80,
                                     borderTopLeftRadius: 5,
@@ -170,6 +188,10 @@ export default class Home extends React.Component {
                                     width: screenWidth - 40,
                                     height: 120,
                                     elevation: 10,
+                                    shadowColor: '#000',
+                                    shadowOffset: { width: 5, height: 5 },
+                                    shadowOpacity: 0.1,
+                                    shadowRadius: 5,
                                     backgroundColor: 'white',
                                     borderRadius: 5,
                                     padding: 10
@@ -220,11 +242,11 @@ export default class Home extends React.Component {
 
                         </View>
                     </View>
-                    <ScrollView nestedScrollEnabled={true} bounces={true} 
-                    style={{ 
-                        height: 300,
-                        marginTop: this.state.scrollPosition.y > 95? 95 : this.state.scrollPosition.y 
-                    }}>
+                    <ScrollView nestedScrollEnabled={true} bounces={true}
+                        style={{
+                            height: 300,
+                            marginTop: this.state.scrollPosition.y > 95 ? 95 : this.state.scrollPosition.y
+                        }}>
                         <View style={{ marginTop: 20, width: screenWidth, alignItems: 'center' }}>
                             {this.state.userMap.map(info => {
                                 return (<SettingButton {...info} />)
@@ -234,7 +256,11 @@ export default class Home extends React.Component {
                     <View style={{ height: screenHeight }}>
                         <Text style={{ margin: 10, fontWeight: 'bold', width: '100%' }}></Text>
                     </View>
-                    <QRScreen modalState={this.state.modalState} closeModal={() => { this.setState({ modalState: false }) }} />
+                    <QRScreen
+                        modalState={this.state.modalState}
+                        closeModal={() => { this.setState({ modalState: false }) }}
+                        startTrip={(e) => { this.startTrip(e) }}
+                    />
                 </ScrollView>
             </View>
         );

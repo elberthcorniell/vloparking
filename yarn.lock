@@ -3842,6 +3842,13 @@ expo-linking@~1.0.3:
     qs "^6.5.0"
     url-parse "^1.4.4"
 
+expo-location@^8.3.0:
+  version "8.3.0"
+  resolved "https://registry.yarnpkg.com/expo-location/-/expo-location-8.3.0.tgz#79250485f3d15bb50fd37060b3bd5e18c9040ded"
+  integrity sha512-4DuFBP1nqfLyy/vpQ7rmvIGSqf2fvAy+g0gGrU0msRrGXZJzic1ZqINzuyxopZzzbYCK561zcarpRyd/8DpttQ==
+  dependencies:
+    invariant "^2.2.4"
+
 expo-location@~8.2.1:
   version "8.2.1"
   resolved "https://registry.yarnpkg.com/expo-location/-/expo-location-8.2.1.tgz#5ea6bfd3d211939117416da151f1384caa15e0db"
@@ -3878,6 +3885,13 @@ expo-sqlite@~8.2.1:
   dependencies:
     "@expo/websql" "^1.0.1"
     lodash "^4.17.15"
+
+expo-task-manager@^8.4.0:
+  version "8.4.0"
+  resolved "https://registry.yarnpkg.com/expo-task-manager/-/expo-task-manager-8.4.0.tgz#f6615c971f2d37bcbe2bb1c730c3c9d2baec4012"
+  integrity sha512-usjnr3F8ZKuwt/bDi7s0eWXN2mqKNOX8ZQJb89jQex337oZ0j2c3iFJZg3bjB0rMwnK749zQTlJH3Y7soVMipw==
+  dependencies:
+    unimodules-app-loader "~1.2.0"
 
 expo-updates@~0.2.8:
   version "0.2.14"

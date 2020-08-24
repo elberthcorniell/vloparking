@@ -37,17 +37,23 @@ export default class QRScreen extends React.Component {
   }
 
   handleBarCodeScanned = ({ type, data }) => {
-    this.props.closeModal()
+
     Alert.alert(
       'Hey!',
-      'Do you want Juan to park your car at?',
+      'Do you want Start this trip?',
       [
         {
           text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
+          onPress: () => { },
           style: 'cancel',
         },
-        { text: 'Yes', onPress: () => { this.props.navigation.replace('Maps') } },
+        {
+          text: 'Yes',
+          onPress: () => {
+            this.props.startTrip(data);
+            this.props.closeModal()
+          }
+        },
       ],
       { cancelable: false }
     );
@@ -121,11 +127,14 @@ export default class QRScreen extends React.Component {
             >
               <Text><AntDesign name='close' size={20} color='#a1a1a1' /></Text>
             </TouchableOpacity>
-            
+
             <Text style={styles.blueTitle} >Qr Scanner</Text>
             <View style={{ ...styles.qrContainer, marginTop: 10 }}>
               <BarCodeScanner
-                onBarCodeScanned={this.state.scanned ? undefined : this.handleBarCodeScanned}
+                onBarCodeScanned={this.state.scanned ? undefined : (data) =>
+                  this.setState({
+                    scanned: true
+                  }, this.handleBarCodeScanned(data))}
                 style={styles.QR}
               />
             </View>
