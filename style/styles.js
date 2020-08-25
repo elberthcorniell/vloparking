@@ -110,10 +110,9 @@ const styles = StyleSheet.create({
   },
   mapContainer: {
     width: screenWidth,
-    height: screenHeight + 40,
-    position: 'absolute',
-    zIndex: -1
-  },
+    height: screenHeight * 0.6,
+    borderRadius: 5,
+   },
   QR: {
     width: screenWidth,
     height: screenHeight,

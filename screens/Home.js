@@ -7,7 +7,8 @@ import {
     Image,
     StatusBar,
     ScrollView,
-    Animated
+    Animated,
+    Alert
 } from 'react-native';
 import { styles } from '../style/styles'
 import { AntDesign } from '@expo/vector-icons'
@@ -15,24 +16,38 @@ import * as  SecureStore from "expo-secure-store";
 import { API_HOST } from '../config'
 import SettingButton from '../components/settingButton'
 import QRScreen from './QRScreen'
+import Maps from './Maps'
 import io from 'socket.io-client'
+import * as Location from 'expo-location';
+import * as TaskManager from 'expo-task-manager'
 const screenHeight = Dimensions.get("window").height;
 const screenWidth = Dimensions.get("window").width;
 let socket
 export default class Home extends React.Component {
     state = {
         userMap: [
-            /* { text: 'BTC', description: 'Bitcoin', icon: <Image source={{ uri: 'https://inverte.io/assets/images/BTC.png' }} style={{ height: 35, width: 35 }} />, margin: 40 },
-             { text: 'ETH', description: 'Ether', icon: <Image source={{ uri: 'https://inverte.io/assets/images/ETH.png' }} style={{ height: 35, width: 35 }} />, margin: 40 },
-             { text: 'USDT', description: 'Tether USD', icon: <Image source={{ uri: 'https://inverte.io/assets/images/USDT.png' }} style={{ height: 35, width: 35 }} />, margin: 40 },
-             { text: 'LINK', description: 'Chainlink', icon: <Image source={{ uri: 'https://inverte.io/assets/images/LINK.png' }} style={{ height: 35, width: 35 }} />, margin: 40 },
-             { text: 'BAT', description: 'Basic Attention', icon: <Image source={{ uri: 'https://inverte.io/assets/images/BAT.png' }} style={{ height: 35, width: 35 }} />, margin: 40 },*/
             { text: 'LINK', description: 'Chainlink', icon: <Image source={{ uri: 'https://inverte.io/assets/images/LINK.png' }} style={{ height: 35, width: 35 }} />, margin: 40 },
         ],
         scrollPosition: { x: 0, y: 0 },
         scrollY: new Animated.Value(0),
         modalState: false,
-        location:{
+        location: {
+            longitude: -19,
+            latitude: 70
+        },
+        carLocation: {
+            longitude: -19,
+            latitude: 70
+        },
+        valetLocation: {
+            longitude: -19,
+            latitude: 70
+        },
+        keyLocation: {
+            longitude: -19,
+            latitude: 70
+        },
+        businessLocation: {
             longitude: -19,
             latitude: 70
         }
@@ -41,16 +56,37 @@ export default class Home extends React.Component {
     componentDidMount() {
         this.verifyAuth()
         socket = io(`${API_HOST}/`)
-
+        socket.on('valetLocation', valetLocation => {
+            this.setState({
+                valetLocation
+            })
+        })
+    }
+    askForCar() {
+        socket.emit('askForCar', {
+            tripId: this.state.tripId
+        })
+    }
+    askForLocationPermissions = async (callback) => {
+        let { status } = await Location.requestPermissionsAsync();
+        callback(status == 'granted')
+        this.setState({
+            location: status == 'granted'
+        })
     }
     startTrip(data) {
         data = JSON.parse(data)
         data.userId = this.state.userId
         socket.emit('startTrip', data, response => {
-            response == "OK" && (()=>{
+            if (response == "OK") {
+                this.setState({
+                    locationModal: true,
+                    tripId: data.tripId
+                })
                 Location.startLocationUpdatesAsync('valetTrip', {
                     accuracy: Location.Accuracy.High,
-                    timeInterval: 500
+                    timeInterval: 1000,
+                    distanceInterval: 2
                 }).then(() => {
                     TaskManager.defineTask('valetTrip', ({ data: { locations }, e }) => {
                         if (e) {
@@ -58,19 +94,34 @@ export default class Home extends React.Component {
                             return;
                         }
                         let { latitude, longitude, speed } = locations[0].coords
-                        socket.emit('valetLocation', {
+                        socket.emit('userLocation', {
                             latitude,
                             longitude,
-                            valetId: this.state.valetId,
+                            userId: this.state.userId,
                             speed
-                        })
+                        }, console.log)
                         this.setState({
-                            location: locations[0].coords,
-                            locationModal: true
+                            location: locations[0].coords
                         })
                     })
                 })
-            })
+            } else {
+                let { success, msg } = response
+                if (!success) {
+                    Alert.alert(
+                        'Error!',
+                        msg,
+                        [
+                            {
+                                text: 'Ok',
+                                onPress: () => { },
+                                style: 'cancel',
+                            }
+                        ],
+                        { cancelable: false }
+                    );
+                }
+            }
         })
     }
     updateState(index) {
@@ -256,12 +307,23 @@ export default class Home extends React.Component {
                     <View style={{ height: screenHeight }}>
                         <Text style={{ margin: 10, fontWeight: 'bold', width: '100%' }}></Text>
                     </View>
-                    <QRScreen
-                        modalState={this.state.modalState}
-                        closeModal={() => { this.setState({ modalState: false }) }}
-                        startTrip={(e) => { this.startTrip(e) }}
-                    />
                 </ScrollView>
+                <QRScreen
+                    modalState={this.state.modalState}
+                    closeModal={() => { this.setState({ modalState: false }) }}
+                    startTrip={(e) => { this.startTrip(e) }}
+                />
+                <Maps
+                    askForLocationPermissions={e => this.askForLocationPermissions(e)}
+                    modalState={this.state.locationModal}
+                    closeModal={() => { this.setState({ locationModal: false }) }}
+                    location={this.state.location}
+                    valetLocation={this.state.valetLocation}
+                    carLocation={this.state.carLocation}
+                    keyLocation={this.state.keyLocation}
+                    businessLocation={this.state.businessLocation}
+                    askForCar={this.askForCar}
+                />
             </View>
         );
     }

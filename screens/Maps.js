@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, Dimensions, TouchableOpacity, StatusBar, Modal } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, TouchableOpacity, StatusBar, Modal, TouchableOpacityBase } from 'react-native';
 import { styles } from '../style/styles'
 import { AntDesign } from '@expo/vector-icons'
 import * as Permissions from 'expo-permissions'
 import * as  SecureStore from "expo-secure-store";
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import { API_HOST } from '../config';
 const screenHeight = Dimensions.get("window").height;
 const screenWidth = Dimensions.get("window").width;
@@ -14,7 +14,6 @@ export default class Maps extends React.Component {
     }
 
     componentDidMount() {
-        this.verifyAuth()
         this.getPermision()
     }
     async getPermision() {
@@ -26,24 +25,6 @@ export default class Maps extends React.Component {
         } else {
             this.setState({ hasLocationPermissions: true });
         }
-    }
-    verifyAuth() {
-        SecureStore.getItemAsync('authtoken').then((token) => {
-            fetch(`${API_HOST}/api/validate/`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'authorization': token
-                }
-            })
-                .then(res => res.json())
-                .then((data) => {
-                    if (!data.success) {
-                        this.props.navigation.replace('Login')
-                    }
-                })
-        })
     }
     render() {
         return (
@@ -81,27 +62,66 @@ export default class Maps extends React.Component {
                                 initialRegion={{
                                     latitude: this.props.location.latitude || -19,
                                     longitude: this.props.location.longitude || 70,
-                                    latitudeDelta: 0.0134,
-                                    longitudeDelta: 0.0134
+                                    latitudeDelta: 0.0015,
+                                    longitudeDelta: 0.0015
                                 }}
                                 region={this.state.region || {
                                     latitude: this.props.location.latitude || -19,
                                     longitude: this.props.location.longitude || 70,
-                                    latitudeDelta: 0.0134,
-                                    longitudeDelta: 0.0134
+                                    latitudeDelta: 0.0015,
+                                    longitudeDelta: 0.0015
                                 }}
                                 onRegionChange={() => {
                                     this.setState({
                                         region: {
                                             latitude: this.props.location.latitude || -19,
                                             longitude: this.props.location.longitude || 70,
-                                            latitudeDelta: 0.0134,
-                                            longitudeDelta: 0.0134
+                                            latitudeDelta: 0.0015,
+                                            longitudeDelta: 0.0015
                                         }
                                     })
                                 }}
-                                style={styles.mapContainer} />}
+                                style={styles.mapContainer}>
+                                <Marker
+                                    key="car"
+                                    coordinate={{
+                                        latitude: this.props.carLocation.latitude || -19,
+                                        longitude: this.props.carLocation.longitude || 70,
+                                    }}
+                                >
+                                    <Text>🚗</Text>
+                                </Marker>
+                                <Marker
+                                    key="key"
+                                    coordinate={{
+                                        latitude: this.props.keyLocation.latitude || -19,
+                                        longitude: this.props.keyLocation.longitude || 70,
+                                    }}
+                                >
+                                    <Text>🔑</Text>
+                                </Marker>
+                                <Marker
+                                    key="velet"
+                                    coordinate={{
+                                        latitude: this.props.valetLocation.latitude || -19,
+                                        longitude: this.props.valetLocation.longitude || 70,
+                                    }}
+                                >
+                                    <Text>🤵</Text>
+                                </Marker>
+                            </MapView>
+
+                            }
                         </View>
+                        <TouchableOpacity
+                            onPress={()=>{
+                                this.props.askForCar()
+                            }}
+                        >
+                            <View style={styles.buttonBlue}>
+                                <Text>I Need My Car</Text>
+                            </View>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </Modal>

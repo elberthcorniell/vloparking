@@ -10,6 +10,14 @@
       "android",
       "web"
     ],
+    "ios": {
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "location",
+          "fetch"
+        ]
+      }
+    },
     "assetBundlePatterns": [
       "**/*"
     ]

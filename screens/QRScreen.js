@@ -37,7 +37,11 @@ export default class QRScreen extends React.Component {
   }
 
   handleBarCodeScanned = ({ type, data }) => {
-
+    setTimeout(()=>{
+      this.setState({
+        scanned: false
+      })
+    }, 10000)
     Alert.alert(
       'Hey!',
       'Do you want Start this trip?',
@@ -57,39 +61,6 @@ export default class QRScreen extends React.Component {
       ],
       { cancelable: false }
     );
-
-    /*
-    SecureStore.getItemAsync('authtoken').then((token) => {
-      fetch(`${API_HOST}/api/validate/getQrData`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'authorization': token
-        },
-        body: data
-      })
-        .then(res => res.json())
-        .then((data) => {
-          if (data.success) {
-            Alert.alert(
-              'Hey!',
-              'Do you want Juan to park your car at?',
-              [
-                {
-                  text: 'Cancel',
-                  onPress: () => console.log('Cancel Pressed'),
-                  style: 'cancel',
-                },
-                { text: 'Yes', onPress: () => { this.props.navigation.replace('Maps') } },
-              ],
-              { cancelable: false }
-            );
-          } else {
-            alert(`Invalid data provided`);
-          }
-        })
-    })*/
   };
 
 
