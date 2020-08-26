@@ -18,8 +18,14 @@
         ]
       }
     },
+    "android": {
+      "googleServicesFile": "./google-services.json"
+    },
     "assetBundlePatterns": [
       "**/*"
     ]
-  }
+  },
+    "android": {
+      "googleServicesFile": "./google-services.json"
+    }
 }

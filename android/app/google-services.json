@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "758242202959",
+    "firebase_url": "https://vlo-parking.firebaseio.com",
+    "project_id": "vlo-parking",
+    "storage_bucket": "vlo-parking.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:758242202959:android:cc07484ff3cc6ac71f613a",
+        "android_client_info": {
+          "package_name": "do.bitnation.vlo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "758242202959-u6g40fc2l2usd9pgsvgtgtrei4t92fg3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkp1rHkYSY9SkzSIw0ZY0Y9Rqex730qCU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "758242202959-u6g40fc2l2usd9pgsvgtgtrei4t92fg3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

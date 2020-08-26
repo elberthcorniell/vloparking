@@ -90,8 +90,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     width: screenWidth,
     alignItems: 'center',
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     elevation: 20
   },
   buttonBlueText: {
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     width: screenWidth,
     height: screenHeight * 0.6,
     borderRadius: 5,
-   },
+  },
   QR: {
     width: screenWidth,
     height: screenHeight,
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
   },
   qrContainer: {
     width: screenWidth - 40,
-    height: screenWidth -40,
+    height: screenWidth - 40,
     overflow: 'hidden',
     borderRadius: 5,
     padding: -100,

@@ -34,15 +34,6 @@ export default function App(){
             )
           }}
         />
-        <Tab.Screen
-          name="Cars"
-          component={Home}
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <AntDesign name={'car'} color={color} size={size} />
-            )
-          }}
-        />
       </Tab.Navigator>
     )
   }
