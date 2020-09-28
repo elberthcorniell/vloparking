@@ -118,14 +118,27 @@ export default class Maps extends React.Component {
                             </View>
                             }<View style={{ ...styles.qrContainer, marginTop: 20, borderRadius: 5, alignItems: 'center', height: screenHeight * 0.7, width: screenWidth }}>
                                 <Text style={styles.blueTitle}>Trip Info</Text>
-                                {this.props.events.map(info =>
-                                    <SettingButton style={{
-                                        backgroundColor: info.type == 0 ? 'yellow' : info.type == null ? 'red' : '#f3f5f7'
-                                    }}
-                                        text={info.description}
-                                        description={info.date}
-                                        onPress={() => { }}
-                                    />)}
+                                <View style={{
+                                    width: screenWidth,
+                                    padding: 20
+                                }}>
+                                    <Text>Last known Speed:</Text>
+                                    <Text style={{
+                                        fontSize: 40
+                                    }}>{(this.props.valetLocation.speed || 0).toFixed(2)} Km/h</Text>
+                                </View>
+                                <ScrollView bounces={true} nestedScrollEnabled={true}>
+                                    {this.props.events.map(info =>
+                                        <SettingButton style={{
+                                            backgroundColor: info.type == 0 ? 'orange' : info.type == null ? 'red' : '#f3f5f7'
+                                        }}
+                                            descriptionStyle={{
+                                                color: info.type == 1 ? '#a1a1a1' : 'white'
+                                            }}
+                                            text={info.description}
+                                            description={info.date}
+                                        />)}
+                                </ScrollView>
                             </View>
 
                         </ScrollView>

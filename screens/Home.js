@@ -24,13 +24,14 @@ import io from 'socket.io-client'
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager'
 import * as Constants from 'expo-constants'
+import EndTrip from './EndTrip';
 const screenHeight = Dimensions.get("window").height;
 const screenWidth = Dimensions.get("window").width;
 let socket
 let headers
 export default class Home extends React.Component {
     state = {
-        userTrips: [],
+        userTrips: [{}],
         events: [],
         scrollPosition: { x: 0, y: 0 },
         scrollY: new Animated.Value(0),
@@ -84,6 +85,10 @@ export default class Home extends React.Component {
             })
         })
         this.setState({ refreshing: false })
+        this.mountSocket()
+
+    }
+    mountSocket() {
         socket = io(`${API_HOST}/`)
         socket.on('valetLocation', valetLocation => {
             this.setState({
@@ -93,9 +98,36 @@ export default class Home extends React.Component {
         socket.on('tripEnded', tripId => {
             console.log('trip Ended')
             this.setState({
-                locationModal: false
+                locationModal: false,
+                endModal: false
             }, () => {
                 this.getUserTrips()
+            })
+        })
+        socket.on('update', () => {
+            this.getUserTrips()
+            this.getEvents()
+        })
+        socket.on('carWithOwner', () => {
+            this.setState({
+                endModal: true
+            })
+        })
+    }
+    update(){
+        this.getUserTrips()
+        this.getEvents()
+    }
+    joinTrip(tripId) {
+        socket.emit('joinTrip', {
+            tripId
+        }, data => {
+            let { valetLocation, carLocation, keyLocation, userLocation } = data
+            data != 'FAIL' && this.setState({
+                valetLocation: valetLocation || {},
+                carLocation: carLocation || {},
+                keyLocation: keyLocation || {},
+                userLocation: userLocation || {}
             })
         })
     }
@@ -186,11 +218,13 @@ export default class Home extends React.Component {
             if (response == "OK") {
                 this.setState({
                     locationModal: true,
-                    tripId: data.tripId
+                    tripId: data.tripId,
+                    dateEnd: null
+                }, () => {
+                    this.startReporting()
+                    this.getUserTrips()
+                    this.getEvents()
                 })
-                this.startReporting()
-                this.getUserTrips()
-                this.getEvents()
             } else {
                 let { success, msg } = response
                 if (!success) {
@@ -273,10 +307,10 @@ export default class Home extends React.Component {
                         scrollPosition: data.nativeEvent.contentOffset
                     })
                 }}
-                    stickyHeaderIndices={[0]}
                 >
                     <RefreshControl
                         refreshing={this.state.refreshing} onRefresh={() => this.componentDidMount()}
+
                     >
                         <View>
                             <View
@@ -366,6 +400,18 @@ export default class Home extends React.Component {
                                         padding: 10
                                     }}
                                 >
+                                    <TouchableOpacity
+                                        onPress={() => { this.update(); }}
+                                        style={{
+                                            margin: 10,
+                                            position: 'absolute',
+                                            top: 10,
+                                            right: 20,
+                                            zIndex: 2
+                                        }}
+                                    >
+                                        <Text><AntDesign name='reload1' size={20} color='#a1a1a1' /></Text>
+                                    </TouchableOpacity>
                                     <Text style={{ margin: 10, fontWeight: 'bold', width: '100%' }}>Your Trips</Text>
                                     <Text style={{
                                         fontSize: 36,
@@ -411,64 +457,61 @@ export default class Home extends React.Component {
 
                             </View>
                         </View>
-                    <View style={{ marginTop: 20, width: screenWidth, minHeight: screenHeight, alignItems: 'center' }}>
-                        {this.state.userTrips.map(info => {
-                            return <SettingButton
-                                text={info.username}
-                                description={info.dateStart}
-                                onPress={() => {
-                                    this.setState({
-                                        tripId: info.tripId,
-                                        locationModal: true,
-                                        dateEnd: info.dateEnd
-                                    }, () => {
-                                        this.getEvents()
-                                        socket.emit('joinTrip', {
-                                            tripId: this.state.tripId
-                                        }, data => {
-                                            let { valetLocation, carLocation, keyLocation, userLocation } = data
-                                            data != 'FAIL' && this.setState({
-                                                valetLocation: valetLocation || {},
-                                                carLocation: carLocation || {},
-                                                keyLocation: keyLocation || {},
-                                                userLocation: userLocation || {}
-                                            })
+
+                        <View style={{ marginTop: 20, width: screenWidth, minHeight: screenHeight, alignItems: 'center' }}>
+                            {this.state.userTrips.map(info => {
+                                return <SettingButton
+                                    text={info.username}
+                                    description={info.dateStart}
+                                    onPress={() => {
+                                        this.setState({
+                                            tripId: info.tripId,
+                                            locationModal: true,
+                                            dateEnd: info.dateEnd
+                                        }, () => {
+                                            this.getEvents()
+                                            this.joinTrip(info.tripId)
                                         })
-                                    })
-                                }}
-                                icon={
-                                    info.dateEnd ?
-                                        <View style={{
-                                            backgroundColor: 'lightgreen',
-                                            height: 40, width: 40,
-                                            justifyContent: "center",
-                                            alignItems: 'center',
-                                            borderRadius: 20,
-                                        }}><Text style={{
-                                            color: 'white',
-                                            fontWeight: "bold"
-                                        }}>Done</Text></View> :
-                                        <View style={{
-                                            backgroundColor: '#FF4040',
-                                            height: 40, width: 40,
-                                            justifyContent: "center",
-                                            alignItems: 'center',
-                                            borderRadius: 20,
-                                        }}><Text style={{
-                                            color: 'white',
-                                            fontWeight: "bold"
-                                        }}>Live</Text></View>
-                                }
-                            />
-                        })}
-                    </View>
+                                    }}
+                                    icon={
+                                        info.dateEnd ?
+                                            <View style={{
+                                                backgroundColor: 'lightgreen',
+                                                height: 40, width: 40,
+                                                justifyContent: "center",
+                                                alignItems: 'center',
+                                                borderRadius: 20,
+                                            }}><Text style={{
+                                                color: 'white',
+                                                fontWeight: "bold"
+                                            }}>Done</Text></View> :
+                                            <View style={{
+                                                backgroundColor: '#FF4040',
+                                                height: 40, width: 40,
+                                                justifyContent: "center",
+                                                alignItems: 'center',
+                                                borderRadius: 20,
+                                            }}><Text style={{
+                                                color: 'white',
+                                                fontWeight: "bold"
+                                            }}>Live</Text></View>
+                                    }
+                                />
+                            })}
+                        </View>
                     </RefreshControl>
-                    
+
                 </ScrollView>
                 <QRScreen
                     modalState={this.state.modalState}
                     closeModal={() => { this.setState({ modalState: false }) }}
                     startTrip={(e) => { this.startTrip(e) }}
+                />
+                <EndTrip
+                    modalState={this.state.endModal}
+                    closeModal={() => { this.setState({ endModal: false }) }}
+                    userId={this.state.userId}
+                    tripId={this.state.tripId}
                 />
                 <Maps
                     askForLocationPermissions={e => this.askForLocationPermissions(e)}

@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { styles } from '../style/styles'
 import * as  SecureStore from "expo-secure-store";
+import * as WebBrowser from 'expo-web-browser';
 import { API_HOST } from '../config';
 import { SafeAreaView } from 'react-native-safe-area-context';
 const screenHeight = Dimensions.get("window").height;
@@ -34,15 +35,13 @@ export default class Login extends React.Component {
         })
             .then(res => res.json())
             .then((data) => {
-                if (data.success) {
-                    SecureStore.setItemAsync('authtoken', data.token)
+                let { success, token } = data
+                if (success) {
+                    SecureStore.setItemAsync('authtoken', token)
                         .then(this.props.navigation.replace('Home'))
                 } else {
                     const { password_err, username_err } = data
                     Alert.alert('Login error', (password_err || username_err || msg))
-                    /*
-                <Text>{this.state.username_err}</Text>
-                <Text>{this.state.password_err}</Text>*/
                 }
             })
     }
@@ -63,6 +62,10 @@ export default class Login extends React.Component {
                     }
                 })
         })
+    }
+    handleRegister = async () => {
+        let result = await WebBrowser.openBrowserAsync('https://vlo.bitnation.do/register');
+        this.setState({ result });
     }
     render() {
         return (
@@ -87,7 +90,7 @@ export default class Login extends React.Component {
                             }}
                             source={0 ? {
                                 uri: 'https://inverte.io/assets/images/logo-text.png'
-                            }: require('../assets/logo.png')} />
+                            } : require('../assets/logo.png')} />
                     </View>
                     <View style={{
                         ...styles.modalView,
@@ -103,15 +106,6 @@ export default class Login extends React.Component {
                             borderRadius: 3
                         }}></View>
                         <Text style={styles.blueTitle}>Login Below</Text>
-                        {/*<Image
-                    source={require('../assets/VPL.png')}
-                    style={{
-                        height: 80,
-                        width: 133,
-                        marginBottom: 70,
-                        marginTop: 50
-                    }}
-                />*/}
                         <TextInput
                             onChangeText={username => this.setState({ username })}
                             placeholder='Username'
@@ -135,7 +129,7 @@ export default class Login extends React.Component {
                                 <Text style={styles.buttonBlueText}>Login</Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => { this.props.navigation.navigate('Register') }}>
+                        <TouchableOpacity onPress={() => { this.handleRegister() }}>
                             <Text>Don't have an account? Register now!</Text>
                         </TouchableOpacity>
                     </View>

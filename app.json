@@ -5,6 +5,7 @@
     "name": "vloparking",
     "slug": "vloparking",
     "version": "1.0.0",
+    "icon": "./assets/logo.png",
     "platforms": [
       "ios",
       "android",
@@ -19,7 +20,9 @@
       }
     },
     "android": {
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "package": "do.bitnation.vlovalet",
+      "versionCode": 1
     },
     "assetBundlePatterns": [
       "**/*"

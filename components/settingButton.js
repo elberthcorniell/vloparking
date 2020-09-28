@@ -15,7 +15,7 @@ export default class SettingButton extends React.Component {
     render() {
         return (
             <TouchableOpacity
-                onPress={() => { this.props.onPress() }}
+                onPress={() => { this.props.onPress ? this.props.onPress() : '' }}
             >
                 <View
                     style={{
@@ -28,7 +28,7 @@ export default class SettingButton extends React.Component {
                         ...this.props.style
                     }}
                 >
-                    <View
+                    {this.props.icon && <View
                         style={{
                             width: 60,
                             justifyContent: 'center',
@@ -36,18 +36,19 @@ export default class SettingButton extends React.Component {
                             height: 60
                         }}>
                         {this.props.icon}
-                    </View>
+                    </View>}
                     <View
                         style={{
                             width: (screenWidth) - (100 + (this.props.margin || 20)),
                             justifyContent: 'center',
-                            height: 60
+                            height: 60,
+                            marginLeft: this.props.icon ? 0 : 20
                         }}
                     >
-                        <Text style={{ fontSize: 16 }}>{this.props.text}</Text>
-                        <Text style={{ color: '#a1a1a1' }}>{this.props.description}</Text>
+                        <Text style={{ fontSize: 16 }} numberOfLines={1}>{this.props.text}</Text>
+                        <Text style={{ color: '#a1a1a1', ...this.props.descriptionStyle }}>{this.props.description}</Text>
                     </View>
-                    <View
+                    {this.props.onPress && <View
                         style={{
                             width: 40,
                             justifyContent: 'center',
@@ -56,7 +57,7 @@ export default class SettingButton extends React.Component {
                         }}
                     >
                         <AntDesign name={'right'} size={14} color='black' size={18} />
-                    </View>
+                    </View>}
                 </View>
             </TouchableOpacity>)
     }
