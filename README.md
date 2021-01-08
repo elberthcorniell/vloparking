@@ -111,7 +111,7 @@ Run the next on your terminal in the repository folder:
 The server should be running at port 19000. Scan the QR on the screen with the expo mobile app.
 
 
-# Database ERD
+## Database ERD
 
 Please contact me for the ERD cause at the moment of writing this document I didn't have it.
 
